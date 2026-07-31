@@ -4,6 +4,7 @@ import type {
   CreateTaskInput,
   Task,
   TaskStatus,
+  UpdateTaskInput,
 } from "./task-types";
 
 type TaskRow = {
@@ -131,6 +132,72 @@ export function createTask(input: CreateTaskInput): Task {
 
   if (!task) {
     throw new Error("The task was created but could not be retrieved.");
+  }
+
+  return task;
+}
+
+export function updateTask(
+  id: number,
+  input: UpdateTaskInput,
+): Task {
+  const updateTaskTransaction = database.transaction(() => {
+    database
+      .prepare(`
+        INSERT INTO topics (name)
+        VALUES (?)
+        ON CONFLICT(name) DO NOTHING
+      `)
+      .run(input.topicName.trim());
+
+    const topic = database
+      .prepare(`
+        SELECT id
+        FROM topics
+        WHERE name = ? COLLATE NOCASE
+      `)
+      .get(input.topicName.trim()) as
+      | { id: number }
+      | undefined;
+
+    if (!topic) {
+      throw new Error("The task topic could not be found.");
+    }
+
+    const result = database
+      .prepare(`
+        UPDATE tasks
+        SET
+          title = ?,
+          description = ?,
+          due_date = ?,
+          topic_id = ?,
+          status = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `)
+      .run(
+        input.title.trim(),
+        input.description.trim(),
+        input.dueDate,
+        topic.id,
+        input.status,
+        id,
+      );
+
+    if (result.changes === 0) {
+      throw new Error("Task not found.");
+    }
+  });
+
+  updateTaskTransaction();
+
+  const task = getTaskById(id);
+
+  if (!task) {
+    throw new Error(
+      "The task was updated but could not be retrieved.",
+    );
   }
 
   return task;

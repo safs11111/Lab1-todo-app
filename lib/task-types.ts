@@ -28,3 +28,11 @@ export type CreateTaskInput = {
     topicName: string;
     status: TaskStatus;
   };
+
+  export type UpdateTaskInput = {
+    title: string;
+    description: string;
+    dueDate: string;
+    topicName: string;
+    status: TaskStatus;
+  };
