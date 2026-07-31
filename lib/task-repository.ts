@@ -229,3 +229,27 @@ export function archiveTask(id: number): Task {
 
   return task;
 }
+
+export function getArchivedTasks(): Task[] {
+  const rows = database
+    .prepare(`
+      SELECT
+        tasks.id,
+        tasks.title,
+        tasks.description,
+        tasks.due_date,
+        tasks.topic_id,
+        topics.name AS topic_name,
+        tasks.status,
+        tasks.archived_at,
+        tasks.created_at,
+        tasks.updated_at
+      FROM tasks
+      JOIN topics ON topics.id = tasks.topic_id
+      WHERE tasks.archived_at IS NOT NULL
+      ORDER BY tasks.archived_at DESC
+    `)
+    .all() as TaskRow[];
+
+  return rows.map(convertRowToTask);
+}

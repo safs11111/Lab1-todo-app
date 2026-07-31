@@ -30,12 +30,24 @@ export default function Home() {
           </p>
         </section>
 
-        <Link
-  href="/tasks/new"
-  className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white shadow-sm hover:bg-violet-800"
+        <nav
+  aria-label="Task navigation"
+  className="flex flex-wrap items-center gap-3"
 >
-  + New Task
-</Link>
+  <Link
+    href="/archive"
+    className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50"
+  >
+    View Archive
+  </Link>
+
+  <Link
+    href="/tasks/new"
+    className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white shadow-sm hover:bg-violet-800"
+  >
+    + New Task
+  </Link>
+</nav>
       </header>
 
       <section
