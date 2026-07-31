@@ -202,3 +202,30 @@ export function updateTask(
 
   return task;
 }
+
+export function archiveTask(id: number): Task {
+  const result = database
+    .prepare(`
+      UPDATE tasks
+      SET
+        archived_at = CURRENT_TIMESTAMP,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+        AND archived_at IS NULL
+    `)
+    .run(id);
+
+  if (result.changes === 0) {
+    throw new Error("Task not found.");
+  }
+
+  const task = getTaskById(id);
+
+  if (!task) {
+    throw new Error(
+      "The task was archived but could not be retrieved.",
+    );
+  }
+
+  return task;
+}

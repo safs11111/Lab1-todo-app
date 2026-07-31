@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getActiveTasks } from "@/lib/task-repository";
+import ArchiveTaskButton from "@/components/ArchiveTaskButton";
 
 export const dynamic = "force-dynamic";
 
@@ -117,12 +118,10 @@ export default function Home() {
   Edit
 </Link>
 
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold"
-                  >
-                    Archive
-                  </button>
+<ArchiveTaskButton
+  taskId={task.id}
+  taskTitle={task.title}
+/>
                 </footer>
               </article>
             ))}

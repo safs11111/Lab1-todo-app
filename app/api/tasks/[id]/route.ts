@@ -1,7 +1,8 @@
 import {
-    getTaskById,
-    updateTask,
-  } from "@/lib/task-repository";
+  archiveTask,
+  getTaskById,
+  updateTask,
+} from "@/lib/task-repository";
   
   import type { TaskStatus } from "@/lib/task-types";
   
@@ -68,6 +69,12 @@ import {
       }
   
       const body = await request.json();
+
+      if (body?.action === "archive") {
+        const task = archiveTask(taskId);
+      
+        return Response.json(task);
+      }
   
       const {
         title,
