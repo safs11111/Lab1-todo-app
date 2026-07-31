@@ -110,12 +110,12 @@ export default function Home() {
                 </p>
 
                 <footer className="mt-5 flex gap-3 border-t border-slate-100 pt-4">
-                  <button
-                    type="button"
-                    className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold"
-                  >
-                    Edit
-                  </button>
+                <Link
+  href={`/tasks/${task.id}/edit`}
+  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold hover:bg-slate-50"
+>
+  Edit
+</Link>
 
                   <button
                     type="button"
