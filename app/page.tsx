@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getActiveTasks } from "@/lib/task-repository";
 
 export const dynamic = "force-dynamic";
@@ -28,12 +29,12 @@ export default function Home() {
           </p>
         </section>
 
-        <button
-          type="button"
-          className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white shadow-sm"
-        >
-          + New Task
-        </button>
+        <Link
+  href="/tasks/new"
+  className="rounded-xl bg-violet-700 px-5 py-3 font-semibold text-white shadow-sm hover:bg-violet-800"
+>
+  + New Task
+</Link>
       </header>
 
       <section
