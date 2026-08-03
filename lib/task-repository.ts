@@ -3,6 +3,7 @@ import { isTaskOverdue } from "./task-rules";
 import type {
   CreateTaskInput,
   Task,
+  TaskSort,
   TaskStatus,
   UpdateTaskInput,
 } from "./task-types";
@@ -59,7 +60,25 @@ export function getTaskById(id: number): Task | null {
   return row ? convertRowToTask(row) : null;
 }
 
-export function getActiveTasks(): Task[] {
+export function getActiveTasks(
+  sort: TaskSort = "dueDate",
+): Task[] {
+  const orderBy: Record<TaskSort, string> = {
+    dueDate: "tasks.due_date ASC, tasks.id ASC",
+
+    topic:
+      "topics.name COLLATE NOCASE ASC, tasks.due_date ASC",
+
+    status: `
+      CASE tasks.status
+        WHEN 'Todo' THEN 1
+        WHEN 'In-Progress' THEN 2
+        WHEN 'Complete' THEN 3
+      END ASC,
+      tasks.due_date ASC
+    `,
+  };
+
   const rows = database
     .prepare(`
       SELECT
@@ -76,7 +95,7 @@ export function getActiveTasks(): Task[] {
       FROM tasks
       JOIN topics ON topics.id = tasks.topic_id
       WHERE tasks.archived_at IS NULL
-      ORDER BY tasks.due_date ASC
+      ORDER BY ${orderBy[sort]}
     `)
     .all() as TaskRow[];
 

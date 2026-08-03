@@ -36,3 +36,8 @@ export type CreateTaskInput = {
     topicName: string;
     status: TaskStatus;
   };
+
+  export type TaskSort =
+  | "dueDate"
+  | "topic"
+  | "status";

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getActiveTasks } from "@/lib/task-repository";
 import ArchiveTaskButton from "@/components/ArchiveTaskButton";
+import type { TaskSort } from "@/lib/task-types";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +11,31 @@ const statusStyles = {
   Complete: "bg-emerald-100 text-emerald-800",
 };
 
-export default function Home() {
-  const tasks = getActiveTasks();
+type HomePageProps = {
+  searchParams: Promise<{
+    sort?: string | string[];
+  }>;
+};
+
+function isTaskSort(
+  value: string | string[] | undefined,
+): value is TaskSort {
+  return (
+    typeof value === "string" &&
+    ["dueDate", "topic", "status"].includes(value)
+  );
+}
+
+export default async function Home({
+  searchParams,
+}: HomePageProps) {
+  const requestedSort = (await searchParams).sort;
+
+  const sort: TaskSort = isTaskSort(requestedSort)
+    ? requestedSort
+    : "dueDate";
+
+  const tasks = getActiveTasks(sort);
 
   return (
     <main className="min-h-screen bg-slate-100 px-6 py-10 text-slate-900">
@@ -54,18 +78,59 @@ export default function Home() {
         aria-labelledby="active-tasks-heading"
         className="mx-auto max-w-5xl rounded-2xl bg-white p-6 shadow-sm"
       >
-        <header className="mb-6">
-          <h2
-            id="active-tasks-heading"
-            className="text-2xl font-bold"
-          >
-            Active Tasks
-          </h2>
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <section>
+    <h2
+      id="active-tasks-heading"
+      className="text-2xl font-bold"
+    >
+      Active Tasks
+    </h2>
 
-          <p className="mt-1 text-sm text-slate-500">
-            {tasks.length} active {tasks.length === 1 ? "task" : "tasks"}
-          </p>
-        </header>
+    <p className="mt-1 text-sm text-slate-500">
+      {tasks.length} active{" "}
+      {tasks.length === 1 ? "task" : "tasks"}
+    </p>
+  </section>
+
+  <nav
+    aria-label="Sort active tasks"
+    className="flex flex-wrap gap-2"
+  >
+    <Link
+      href="/?sort=dueDate"
+      className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+        sort === "dueDate"
+          ? "border-violet-700 bg-violet-700 text-white"
+          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      Due date
+    </Link>
+
+    <Link
+      href="/?sort=topic"
+      className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+        sort === "topic"
+          ? "border-violet-700 bg-violet-700 text-white"
+          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      Topic
+    </Link>
+
+    <Link
+      href="/?sort=status"
+      className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+        sort === "status"
+          ? "border-violet-700 bg-violet-700 text-white"
+          : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+      }`}
+    >
+      Status
+    </Link>
+  </nav>
+</header>
 
         {tasks.length === 0 ? (
           <section className="rounded-xl border border-dashed border-slate-300 p-10 text-center">
